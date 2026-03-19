@@ -2,64 +2,262 @@
 <html>
   <head>
     <link href="./css/main.css" rel="stylesheet" />
-    <title>Document</title>
+    <link rel="icon" type="image/png" href="./images/favicon.png" />
+    <title>PURPLE PAGES</title>
+    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
+    <script src="./js/isotope.pkgd.min.js"></script>
   </head>
   <body>
     <div class="canvas"></div>
 
+    <header class="site-header">
+      <div class="header-marquee">
+        <span class="header-subtitle">An Index of Toronto Tattoo Artists</span>
+      </div>
+      <span class="header-logotype">Purple Pages</span>
+    </header>
+
+    <div class="bottom-stroke"></div>
+
     <div class="list">
-      <div class="row coop-entry">
-        <span class="name coop-name">COOP</span>
-        <span class="number coop-number">068</span>
+
+      <div class="no-results">
+        <div class="no-results-sorry">Sorry</div>
+        <div class="no-results-sub">no artists match your parameters</div>
+      </div>
+      <div class="row coop-entry" data-folder="coop" data-images="5" data-colour="original1.png,original2.png,original3.png,original4.png,original5.png" data-style="anti-tattoo illustrative sketch abstract" data-content="animals cartoon mundane" data-link="https://www.instagram.com/c00pc00p/">
+        <span class="name">COOP</span>
+        <span class="studio">magic door tattoo</span>
+        <span class="neighbourhood">brockton village</span>
+        <span class="number">001</span>
       </div>
 
-      <div class="row jess-entry">
-        <span class="name jess-name">JESS CHEN</span>
-        <span class="number jess-number">060</span>
+        <div class="row jess-entry" data-folder="jess chen" data-images="5" data-colour="Screenshot 2026-02-13 at 08.13.21.png,Screenshot 2026-02-13 at 08.13.49.png,Screenshot 2026-02-13 at 08.14.29.png,Screenshot 2026-02-13 at 08.15.32.png,Screenshot 2026-03-15 at 22.30.17.png" data-link="https://www.jessica-chen.com/body" data-style="japanese watercolour" data-content="floral animals">
+        <span class="name">JESS CHEN</span>
+        <span class="studio">private</span>
+        <span class="neighbourhood">unknown</span>
+        <span class="number">002</span>
       </div>
 
-      <div class="row sewp-entry">
-        <span class="name sewp-name">SEWP</span>
-        <span class="number sewp-number">011</span>
+        <div class="row sewp-entry" data-folder="sewp" data-images="5" data-colour="Screenshot 2026-02-11 at 19.37.45.png,Screenshot 2026-02-11 at 19.37.57.png,Screenshot 2026-02-11 at 19.38.50.png,Screenshot 2026-02-11 at 19.39.09.png,Screenshot 2026-02-11 at 19.40.03.png" data-link="https://www.instagram.com/sewp/"data-style="blackwork illustrative abstract" data-content="gore skulls nsfw portrait snakes">
+        <span class="name">SEWP</span>
+        <span class="studio">delete after death</span>
+        <span class="neighbourhood">pelham park</span>
+        <span class="number">003</span>
       </div>
 
-      <div class="row earth-entry">
-        <span class="name earth-name">EARTHYLILTATS</span>
-        <span class="number earth-number">072</span>
+        <div class="row earth-entry" data-folder="earthyliltats" data-images="5" data-colour="Screenshot 2026-03-13 at 13.32.22.png,Screenshot 2026-03-13 at 13.32.51.png,Screenshot 2026-03-13 at 13.33.10.png,Screenshot 2026-03-13 at 13.35.00.png,Screenshot 2026-03-13 at 13.36.18.png" data-style="fineline illustrative abstract" data-content="floral animals symbols" data-link="https://www.instagram.com/earthyliltats/">
+        <span class="name">EARTHYLILTATS</span>
+        <span class="studio">nicer folks</span>
+        <span class="neighbourhood">junction-wallace emerson</span>
+        <span class="number">004</span>
       </div>
 
-      <div class="row meg-entry">
-        <span class="name meg-name">MEGDEARLOVE</span>
-        <span class="number meg-number">018</span>
+        <div class="row meg-entry" data-folder="megdearlove" data-images="5" data-colour="Screenshot 2026-03-13 at 14.03.13.png,Screenshot 2026-03-13 at 14.03.26.png,Screenshot 2026-03-13 at 14.03.44.png,Screenshot 2026-03-13 at 14.03.58.png,Screenshot 2026-03-13 at 14.04.36.png" data-style="illustrative" data-content="animals mundane cartoon typographic cute" data-link="https://www.megdearlove.com">
+        <span class="name">MEGDEARLOVE</span>
+        <span class="studio">noon tattoo</span>
+        <span class="neighbourhood">west queen west</span>
+        <span class="number">005</span>
       </div>
 
-      <div class="row placeholder-entry-1">
-        <span class="name">NAME</span>
-        <span class="number">000</span>
+        <div class="row tia-entry" data-folder="tia fila" data-images="5" data-colour="Screenshot 2026-03-13 at 17.08.17.png,Screenshot 2026-03-13 at 17.08.39.png,Screenshot 2026-03-13 at 17.09.11.png,Screenshot 2026-03-13 at 17.19.22.png,Screenshot 2026-03-13 at 17.20.36.png" data-style="blackwork" data-content="gore animals portrait dragons snakes abstract" data-link="https://www.instagram.com/tiafila/">
+        <span class="name">TIA FILA</span>
+        <span class="studio">delete after death</span>
+        <span class="neighbourhood">pelham park</span>
+        <span class="number">006</span>
       </div>
 
-      <div class="row placeholder-entry-2">
-        <span class="name">NAME</span>
-        <span class="number">000</span>
+        <div class="row curt-entry" data-folder="curt montgomery" data-images="5" data-colour="Screenshot 2026-03-13 at 14.51.42.png,Screenshot 2026-03-13 at 14.51.56.png,Screenshot 2026-03-13 at 14.52.14.png,Screenshot 2026-03-13 at 14.52.32.png,Screenshot 2026-03-13 at 14.53.27.png" data-style="ilustrative sketch" data-content="portrait mundane nsfw" data-link="https://www.instagram.com/curtmontgomerytattoos/">
+        <span class="name">CURT MONTGOMERY</span>
+        <span class="studio">attic tattoo</span>
+        <span class="neighbourhood">church-wellesley</span>
+        <span class="number">007</span>
       </div>
 
-      <div class="row placeholder-entry-3">
-        <span class="name">NAME</span>
-        <span class="number">000</span>
+        <div class="row binksy-entry" data-folder="binksy" data-images="5" data-style="sketch fineline" data-colour="Screenshot 2026-03-16 at 15.06.05.png,Screenshot 2026-03-16 at 15.06.20.png,Screenshot 2026-03-16 at 15.06.36.png,Screenshot 2026-03-16 at 15.07.24.png,Screenshot 2026-03-16 at 15.07.58.png" data-content="mundane floral animals" data-link="https://binksy.org/?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnYcNBERQHsUXMFNNXjzQWyL-vSaEnrJ9Jx2U1aMfJKSda_YxFTa4kf7ZbxzE_aem_lX1gI0u-xEdmG9rqb-6_aQ">
+        <span class="name">BINKSY</span>
+        <span class="studio">nicerfolks</span>
+        <span class="neighbourhood">junction-wallace emerson</span>
+        <span class="number">008</span>
       </div>
 
-      <div class="row placeholder-entry-4">
-        <span class="name">NAME</span>
-        <span class="number">000</span>
+        <div class="row nosho-entry" data-folder="nosho" data-images="5" data-colour="Screenshot 2026-03-16 at 19.37.02.png,Screenshot 2026-03-16 at 20.18.44.png,Screenshot 2026-03-16 at 20.19.07.png,Screenshot 2026-03-16 at 20.22.10.png,Screenshot 2026-03-16 at 20.22.41.png" data-style="folk traditional" data-content="floral animals cartoon mundane ornamental" data-link="https://www.instagram.com/nosho/">
+        <span class="name">NOSHO</span>
+        <span class="studio">nowhere tattoo</span>
+        <span class="neighbourhood">little portugal</span>
+        <span class="number">009</span>
       </div>
 
-      <div class="row placeholder-entry-5">
-        <span class="name">NAME</span>
-        <span class="number">000</span>
+        <div class="row chloe-entry" data-folder="chloe houseley" data-images="5" data-colour="Screenshot 2026-03-16 at 20.33.04.png,Screenshot 2026-03-16 at 20.33.19.png,Screenshot 2026-03-16 at 20.34.01.png,Screenshot 2026-03-16 at 20.34.21.png,Screenshot 2026-03-16 at 20.35.48.png" data-style="folk traditional illustrative" data-content="floral animals portrait" data-link="https://www.instagram.com/chloehouseley/">
+        <span class="name">CHLOE HOUSELEY</span>
+        <span class="studio">under my thumb tattoos</span>
+        <span class="neighbourhood">brockton village</span>
+        <span class="number">010</span>
+      </div>
+
+        <div class="row nathan-entry" data-folder="nathan" data-images="5" data-colour="Screenshot 2026-03-16 at 20.50.24.png,Screenshot 2026-03-16 at 20.50.42.png,Screenshot 2026-03-16 at 20.50.57.png,Screenshot 2026-03-16 at 20.51.27.png,Screenshot 2026-03-16 at 20.52.29.png" data-style="realism fineline" data-content="floral portrait animals fine art " data-link="https://www.instagram.com/nathan_tattooer/">
+        <span class="name">NATHAN</span>
+        <span class="studio">guest</span>
+        <span class="neighbourhood">unknown</span>
+        <span class="number">011</span>
+      </div>
+
+        <div class="row em-entry" data-folder="em" data-images="5" data-colour="Screenshot 2026-03-16 at 20.41.10.png,Screenshot 2026-03-16 at 20.41.53.png,Screenshot 2026-03-16 at 20.42.13.png,Screenshot 2026-03-16 at 20.43.08.png,Screenshot 2026-03-16 at 20.43.54.png" data-style="neo-traditional" data-content="floral skulls animals ornamental portrait symbols" data-link="https://www.instagram.com/emtattooo/">
+        <span class="name">EM</span>
+        <span class="studio">under my thumb tattoos</span>
+        <span class="neighbourhood">brockton village</span>
+        <span class="number">012</span>
+      </div>
+
+        <div class="row shuttleworth-entry" data-folder="shuttleworth" data-images="5" data-colour="Screenshot 2026-03-16 at 21.01.35.png,Screenshot 2026-03-16 at 21.01.53.png,Screenshot 2026-03-16 at 21.02.20.png,Screenshot 2026-03-16 at 21.02.56.png,Screenshot 2026-03-16 at 21.03.12.png" data-style="traditional" data-content="dragons snakes portrait animals" data-link="https://www.instagram.com/shuttleworthtattoos/">
+        <span class="name">SHUTTLEWORTH</span>
+        <span class="studio">nowhere tattoo</span>
+        <span class="neighbourhood">little portugal</span>
+        <span class="number">013</span>
+      </div>
+
+        <div class="row parasite-entry" data-folder="parasite veil" data-images="5" data-colour="Screenshot 2026-03-16 at 21.32.39.png,Screenshot 2026-03-16 at 21.33.12.png,Screenshot 2026-03-16 at 21.34.04.png,Screenshot 2026-03-16 at 21.34.21.png,Screenshot 2026-03-16 at 21.35.18.png" data-style="blackwork abstract anti-tattoo" data-content="floral ornamental" data-link="https://www.instagram.com/parasite_veil/">
+        <span class="name">PARASITE VEIL</span>
+        <span class="studio">PRIVATE</span>
+        <span class="neighbourhood">UNKNOWN</span>
+        <span class="number">014</span>
+      </div>
+
+        <div class="row disco-entry" data-folder="disco" data-images="5" data-colour="Screenshot 2026-03-16 at 21.45.01.png,Screenshot 2026-03-16 at 21.45.23.png,Screenshot 2026-03-16 at 21.45.47.png,Screenshot 2026-03-16 at 21.46.19.png,Screenshot 2026-03-16 at 21.47.00.png" data-style="anti-tattoo script abstract" data-content="floral animals ornamental symbols typographic" data-link="https://www.instagram.com/disco___o/">
+        <span class="name">DISCO</span>
+        <span class="studio">my friends studio</span>
+        <span class="neighbourhood">unknown</span>
+        <span class="number">015</span>
+      </div>
+
+        <div class="row eric-entry" data-folder="eric newstead" data-images="5" data-colour="Screenshot 2026-03-16 at 21.53.33.png,Screenshot 2026-03-16 at 21.53.48.png,Screenshot 2026-03-16 at 21.55.43.png,Screenshot 2026-03-16 at 21.56.03.png,Screenshot 2026-03-16 at 21.56.41.png" data-style="traditional japanese" data-content="animals skulls portrait dragons snakes floral mythical gore nsfw" data-link="https://www.instagram.com/tattooer_ericnewstead/">
+        <span class="name">ERIC NEWSTEAD</span>
+        <span class="studio">okey doke tattoo</span>
+        <span class="neighbourhood">trinity bellwoods</span>
+        <span class="number">016</span>
+      </div>
+
+        <div class="row manca-entry" data-folder="manca" data-images="5" data-colour="Screenshot 2026-03-18 at 16.05.14.png,Screenshot 2026-03-18 at 16.05.59.png,Screenshot 2026-03-18 at 16.06.19.png,Screenshot 2026-03-18 at 16.06.49.png,Screenshot 2026-03-18 at 16.07.34.png" data-style="japanese traditional geometric tribal" data-content="floral ornamental animals mythical symbols" data-link="https://www.instagram.com/manca_/">
+        <span class="name">MANCA</span>
+        <span class="studio">nowhere tattoo</span>
+        <span class="neighbourhood">little portugal</span>
+        <span class="number">017</span>
+      </div>
+
+        <div class="row jacqueline-entry" data-folder="jacqueline may" data-images="5" data-colour="Screenshot 2026-03-18 at 16.12.10.png,Screenshot 2026-03-18 at 16.12.44.png,Screenshot 2026-03-18 at 16.13.12.png,Screenshot 2026-03-18 at 16.13.31.png,Screenshot 2026-03-18 at 16.14.10.png" data-style="traditional surrealism illustrative" data-content="floral portrait animals symbols religious" data-link="https://www.hellojacquelinemay.com/links">
+        <span class="name">JACQUELINE MAY</span>
+        <span class="studio">private</span>
+        <span class="neighbourhood">unknown</span>
+        <span class="number">018</span>
+      </div>
+
+        <div class="row yusun-entry" data-folder="la petite yusun" data-images="5" data-colour="Screenshot 2026-03-18 at 16.16.08.png,Screenshot 2026-03-18 at 16.16.42.png,Screenshot 2026-03-18 at 16.17.13.png,Screenshot 2026-03-18 at 16.18.06.png,Screenshot 2026-03-18 at 16.18.36.png" data-style="fineline watercolour illustrative abstract" data-content="floral portrait animals mythical" data-link="https://www.yusunkang.com/">
+        <span class="name">LA PETITE YUSUN</span>
+        <span class="studio">take it easy tattoo</span>
+        <span class="neighbourhood">queen street west</span>
+        <span class="number">019</span>
+      </div>
+
+        <div class="row mano-entry" data-folder="mano blue" data-images="5" data-colour="Screenshot 2026-03-18 at 16.28.38.png,Screenshot 2026-03-18 at 16.28.46.png,Screenshot 2026-03-18 at 16.29.17.png,Screenshot 2026-03-18 at 16.29.37.png,Screenshot 2026-03-18 at 16.30.09.png" data-style="handpoke illustrative sketch abstract" data-content="portrait animals cute architecture symbols cartoon mundane" data-link="https://www.instagram.com/mano_blue/">
+        <span class="name">MANO BLUE</span>
+        <span class="studio">studio querencia</span>
+        <span class="neighbourhood">unknown</span>
+        <span class="number">020</span>
+      </div>
+
+        <div class="row lemin-entry" data-folder="lemin" data-images="5" data-colour="Screenshot 2026-03-18 at 16.35.10.png,Screenshot 2026-03-18 at 16.36.02.png,Screenshot 2026-03-18 at 16.36.25.png,Screenshot 2026-03-18 at 16.37.13.png,Screenshot 2026-03-18 at 16.37.31.png" data-style="fineline realism illustrative" data-content="portrait floral mundane animals ornamental architecture" data-link="https://www.instagram.com/lemin.ink/">
+        <span class="name">LEMIN</span>
+        <span class="studio">private</span>
+        <span class="neighbourhood">scarborough</span>
+        <span class="number">021</span>
+      </div>
+
+        <div class="row income-entry" data-folder="income tats" data-images="5" data-colour="Screenshot 2026-03-18 at 16.43.26.png,Screenshot 2026-03-18 at 16.43.47.png,Screenshot 2026-03-18 at 16.44.06.png,Screenshot 2026-03-18 at 16.44.37.png,Screenshot 2026-03-18 at 16.45.02.png" data-style="anti-tattoo script lettering sketch abstract" data-content="symbols typographic ornamental" data-link="https://incometats.com/book">
+        <span class="name">INCOME TATS</span>
+        <span class="studio">my friends studio</span>
+        <span class="neighbourhood">unknown</span>
+        <span class="number">022</span>
+      </div>
+
+        <div class="row chris-entry" data-folder="chris sopourmas" data-images="5" data-colour="Screenshot 2026-03-18 at 16.48.35.png,Screenshot 2026-03-18 at 16.48.53.png,Screenshot 2026-03-18 at 16.49.34.png,Screenshot 2026-03-18 at 16.49.56.png,Screenshot 2026-03-18 at 16.50.18.png" data-style="traditional" data-content="portrait animals typographic dragons snakes skulls mythical religious symbols" data-link="https://www.instagram.com/chrissoupourmas/">
+        <span class="name">CHRIS SOPOURMAS</span>
+        <span class="studio">okey doke tattoo</span>
+        <span class="neighbourhood">trinity bellwoods</span>
+        <span class="number">023</span>
       </div>
     </div>
 
-    <!-- fixed footer (bottom center) -->
-    <div class="site-footer">Purple Pages</div>
+    <!-- Fixed bottom container -->
+    <div class="bottom-container">
+      <div class="buttons-wrapper">
+        <div class="button-section">
+          <div class="button-group">
+            <button class="toggle-btn">blackwork</button>
+            <button class="toggle-btn">japanese</button>
+            <button class="toggle-btn">traditional</button>
+            <button class="toggle-btn">neo-traditional</button>
+            <button class="toggle-btn">tribal</button>
+            <button class="toggle-btn">anti-tattoo</button>
+            <button class="toggle-btn">fineline</button>
+            <button class="toggle-btn">dotwork</button>
+            <button class="toggle-btn">watercolour</button>
+            <button class="toggle-btn">realism</button>
+            <button class="toggle-btn">script</button>
+            <button class="toggle-btn">lettering</button>
+            <button class="toggle-btn">geometric</button>
+            <button class="toggle-btn">illustrative</button>
+            <button class="toggle-btn">sketch</button>
+            <button class="toggle-btn">new school</button>
+            <button class="toggle-btn">surrealism</button>
+            <button class="toggle-btn">abstract</button>
+            <button class="toggle-btn">folk</button>
+            <button class="toggle-btn">handpoke</button>
+          </div>
+        </div>
+
+        <div class="button-section">
+          <div class="button-group">
+            <button class="toggle-btn">floral</button>
+            <button class="toggle-btn">portrait</button>
+            <button class="toggle-btn">animals</button>
+            <button class="toggle-btn">cartoon</button>
+            <button class="toggle-btn">fine art</button>
+            <button class="toggle-btn">architecture</button>
+            <button class="toggle-btn">symbols</button>
+            <button class="toggle-btn">gore</button>
+            <button class="toggle-btn">mythical</button>
+            <button class="toggle-btn">sci-fi</button>
+            <button class="toggle-btn">skulls</button>
+            <button class="toggle-btn">typographic</button>
+            <button class="toggle-btn">snakes</button>
+            <button class="toggle-btn">dragons</button>
+            <button class="toggle-btn">nsfw</button>
+            <button class="toggle-btn">mundane</button>
+            <button class="toggle-btn">religious</button>
+            <button class="toggle-btn">ornamental</button>
+            <button class="toggle-btn">cute</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hover image preview -->
+    <div id="hover-preview" class="hover-preview">
+      <img id="hover-image" src="" alt="Preview">
+    </div>
+
+    <!-- Row dropdown (hidden by default) -->
+    <div id="row-dropdown" class="row-dropdown" aria-hidden="true">
+      <div class="row-dropdown__inner">
+        <div class="row-dropdown__header">
+          <h3 id="row-dropdown-title">Gallery</h3>
+        </div>
+        <div id="row-dropdown-images" class="row-dropdown__images" role="list"></div>
+      </div>
+    </div>
+
+    <script src="./js/main.js"></script>
+
+    
   </body>
 </html>

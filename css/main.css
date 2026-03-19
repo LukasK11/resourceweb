@@ -3,6 +3,45 @@
   --pp-font: "PP Supply Sans", sans-serif;
 }
 
+/* No results message */
+.no-results {
+  position: fixed;
+  top: 36px;
+  left: 0;
+  right: 0;
+  bottom: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  color: var(--accent);
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.list.show-no-results .no-results {
+  opacity: 1;
+}
+
+.no-results-sorry {
+  font-family: "PP Playground", var(--pp-font);
+  font-weight: 500;
+  font-size: 120px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.no-results-sub {
+  font-family: var(--pp-font);
+  font-weight: 200;
+  font-size: 14px;
+  text-transform: uppercase;
+  -webkit-font-smoothing: antialiased;
+}
+
 /* base */
 body{
   font-family: var(--pp-font);
@@ -57,24 +96,25 @@ body{
 /* canvas / background */
 .canvas {
   width: 100%;
-  height: 982px;
+  height: 100%;
   background: rgba(255,255,255,1);
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   overflow: hidden;
+  z-index: -1;
 }
 
 /* preserved list background */
 .list {
-  width: 360px;
-  height: 1016px;
+  width: 100%;
+  height: auto;
   background: url("../images/v269_979.png") no-repeat center/cover;
-  margin: -1px;
-  position: absolute;
-  top: 0;
-  left: 0;
+  margin: 0;
+  position: relative;
   padding: 0;
+  padding-top: 36px;
+  padding-bottom: 120px;
   overflow: visible;
 }
 
@@ -90,112 +130,131 @@ body{
 .placeholder-entry-4 { background: url("../images/v269_1004.png") no-repeat center/cover; }
 .placeholder-entry-5 { background: url("../images/v269_1007.png") no-repeat center/cover; }
 
-/* Hover preview: base (hidden) so transitions can animate smoothly */
-.coop-entry::after {
-  content: "";
+/* Site header */
+.site-header {
+  width: 100%;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--accent);
+  border-left: none;
+  border-right: none;
+  background-color: white;
   position: fixed;
   top: 0;
+  left: 0;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.header-marquee {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  transform: translateX(100%);
+  transition: transform 8s linear;
+}
+
+.header-marquee.scrolling {
+  transform: translateX(-100vw);
+}
+
+.header-marquee.returning {
+  transition: transform 0.6s ease-in-out;
+  transform: translateX(100%) !important;
+}
+
+.header-subtitle {
+  font-family: var(--pp-font);
+  font-weight: 200;
+  font-size: 16px;
+  color: var(--accent);
+  line-height: 36px;
+  -webkit-font-smoothing: antialiased;
+  text-transform: uppercase;
+  padding: 0 60px;
+}
+
+/* Remove the scrolling-dependent logotype change — logotype is outside marquee now */
+
+/* Fixed bottom stroke */
+.bottom-stroke {
+  position: fixed;
   bottom: 0;
-  left: 360px;
-  width: calc(100vw - 360px);
-  max-width: calc(100vw - 360px);
-  background-image: url("../images/coop-hover.png");
-  background-repeat: no-repeat;
-  background-size: auto 100%;
-  background-position: left center;
-  border: none;              /* remove faint grey line */
-  outline: none;
-  box-shadow: none;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 300ms ease-in-out;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: var(--accent);
   z-index: 1000;
 }
 
-/* reveal with ease-in-out */
-.coop-entry:hover::after {
-  opacity: 1;
+.header-logotype {
+  font-family: var(--pp-font);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--accent);
+  line-height: 36px;
+  -webkit-font-smoothing: antialiased;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: font-family 300ms ease-in-out;
+  position: relative;
+  top: 0;
+  padding: 0 12px;
+  z-index: 2;
+  background-color: white;
 }
 
-/* Fallback for narrow viewports */
-@media (max-width: 480px) {
-  .coop-entry::after {
-    left: 0;
-    width: 100vw;
-    max-width: 100vw;
-  }
+.site-header:hover .header-logotype {
+  font-family: "PP Playground", var(--pp-font);
+  font-weight: 500;
+  font-size: 24px;
+  text-transform: capitalize;
+  top: 3px;
 }
 
-/* common row sizing (keeps visual identical) */
+/* common row sizing */
 .row {
-  width: 360px;
+  width: 100%;
   height: 30px;
   padding: 11px 14px;
   box-sizing: border-box;
   position: relative;
-  overflow: visible; /* allow arrow to slide in from outside */
-  opacity: 1;
-  --arrow-right: calc(44px + 100px); /* default: number-col (44) + name-shift (100) */
-}
-
-/* pointer-style arrow (thin stroke with a tail) that slides in from the left edge of the page.
-   It starts far off-screen (translateX(-120vw)) so it visually emerges from the page edge,
-   then translates to its final resting position (left calc(...)) on hover. */
-.row::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  height: 100%;
-  /* span from far left of viewport to the final right anchor */
-  left: -100vw;
-  right: var(--arrow-right);
-  /* the SVG draws a long tail and a short arrowhead at the right end */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 30'><g fill='none' stroke='%239C47FF' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 15 H96' /><path d='M96 8 L110 15 L96 22' /></g></svg>");
-  background-repeat: no-repeat;
-  background-position: right center; /* arrowhead flush to the right edge (final stop) */
-  background-size: auto 80%;
-  /* start fully off-screen to the left */
-  transform: translateX(-100%);
-  opacity: 0;
-  transition: transform 700ms ease-in-out, opacity 700ms ease-in-out; /* slower */
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* slide in on hover */
-.row:hover::before {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-/* ensure names never get overlapped: keep names above arrow and reserve space */
-.row .name {
-  position: relative;
-  z-index: 2;
-}
-
-/* small nudge so numbers don't visually collide when arrow appears */
-.row .number {
-  transition: transform 600ms ease-in-out;
-}
-.row:hover .number {
-  transform: translateX(-6px);
+  overflow: visible;
 }
 
 /* stacked list styling with collapsed borders */
 .list > .row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 0;
   margin: 0;
-  padding: 0 12px;
-  height: 30px;
+  padding: 0;
+  height: 36px;
+  width: 100%;
   background-color: transparent;
-  border: 1px solid var(--accent);
+  border: 1px dotted var(--accent);
+  border-left: none;
+  border-right: none;
   border-radius: 0;
+  transition: background-color 300ms ease-in-out, opacity 600ms;
+  cursor: pointer;
 }
-.list > .row:first-child {
-  border-top: 1px solid var(--accent) !important;
+
+.list > .row:hover {
+  background-color: var(--accent);
+}
+.list > .row:first-of-type,
+.list > .no-results + .row {
+  border-top: none !important;
   margin-top: 0 !important;
   position: relative;
   z-index: 1;
@@ -207,63 +266,103 @@ body{
 
 /* text reset inside rows */
 .row .name,
+.row .studio,
+.row .neighbourhood,
 .row .number {
   position: static;
   margin: 0;
-  padding: 0;
+  padding: 0 20px;
   display: inline-block;
-  line-height: 30px;
+  line-height: 36px;
   font-family: var(--pp-font);
-  color: var(--accent);
-}
-
-/* left labels (visually bold originally) - moved left per prior requests */
-.row .name {
-  flex: 1 1 auto;
-  text-align: right;
-  padding-right: 2px;
-  transform: translateX(-100px);
-}
-
-/* numbers column - ultralight */
-.row .number {
-  flex: 0 0 44px;
-  text-align: right;
   font-weight: 200;
+  color: var(--accent);
   -webkit-font-smoothing: antialiased;
+  text-transform: uppercase;
+  transition: color 300ms ease-in-out;
 }
 
-/* specific name/number classes for entries (if you want per-entry overrides later) */
-.coop-name   { /* reserved */ }
-.coop-number { /* reserved */ }
-.jess-name   { /* reserved */ }
-.jess-number { /* reserved */ }
-.sewp-name   { /* reserved */ }
-.sewp-number { /* reserved */ }
-.earth-name  { /* reserved */ }
-.earth-number{ /* reserved */ }
-.meg-name    { /* reserved */ }
-.meg-number  { /* reserved */ }
+.list > .row:hover .name,
+.list > .row:hover .studio,
+.list > .row:hover .neighbourhood,
+.list > .row:hover .number {
+  color: white !important;
+}
+
+/* name column - left aligned */
+.row .name {
+  flex: 0 0 200px;
+  text-align: left;
+  padding-left: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* studio column */
+.row .studio {
+  flex: 0 0 180px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* neighbourhood column */
+.row .neighbourhood {
+  flex: 0 0 180px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* numbers column - right aligned, pushed to the end */
+.row .number {
+  flex: 0 0 auto;
+  margin-left: auto;
+  text-align: right;
+  padding-right: 12px;
+  white-space: nowrap;
+}
 
 /* ensure list colors */
 .list .row .name,
+.list .row .studio,
+.list .row .neighbourhood,
 .list .row .number { color: var(--accent) !important; }
 
-/* hover -> switch to PP Supply Sans Bold with an ease fade */
-.row .name,
-.row .number {
-  transition: color 300ms ease-in-out, opacity 300ms ease-in-out, transform 300ms ease-in-out;
-  will-change: color, opacity, transform;
+/* Hide studio when it can't fit alongside other columns */
+@media (max-width: 700px) {
+  .row .studio {
+    display: none;
+  }
 }
 
-.row:hover .name,
-.row:hover .number {
-  font-family: "PP Supply Sans", var(--pp-font);
-  font-weight: 700; /* bold */
-  color: var(--accent);
-  opacity: 1;
-  transform: none;
+/* Hide neighbourhood too at very small sizes */
+@media (max-width: 450px) {
+  .row .neighbourhood {
+    display: none;
+  }
 }
+
+/* Hover image preview */
+.hover-preview {
+  position: fixed;
+  display: none;
+  pointer-events: none;
+  z-index: 5000;
+}
+
+.hover-preview img {
+  max-height: 400px;
+  width: auto;
+  display: block;
+  filter: 
+    drop-shadow(1px 0 0 var(--accent))
+    drop-shadow(-1px 0 0 var(--accent))
+    drop-shadow(0 1px 0 var(--accent))
+    drop-shadow(0 -1px 0 var(--accent));
+}
+
 
 /* fixed bottom-center footer */
 .site-footer {
@@ -324,14 +423,402 @@ body{
   opacity: 1; /* fade bold Supply Sans in */
 }
 
-/* remove arrow visuals and prevent number nudging */
-.row::before,
-.row:hover::before {
-  display: none !important;
-  opacity: 0 !important;
-  transform: none !important;
+
+
+/* Fixed bottom container with frosted glass effect */
+.bottom-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  padding: 16px 16px 18px 16px;
+  border-top: 1px solid var(--accent);
+  border-radius: 0;
+  /* Frosted glass effect */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  /* Match the box styling */
+  box-sizing: border-box;
 }
-.row .number {
-  transition: none !important;
-  transform: none !important;
+
+/* Buttons wrapper */
+.buttons-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Button section wrapper */
+.button-section {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: baseline;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* Stroke between button sections */
+.button-section + .button-section {
+  padding-top: 16px;
+  position: relative;
+}
+
+.button-section + .button-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -16px;
+  right: -16px;
+  border-top: 1px dotted var(--accent);
+}
+
+/* Section subheader */
+.section-subheader {
+  margin: 0;
+  padding: 0;
+  padding-right: 2px;
+  font-family: var(--pp-font);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--accent);
+  text-transform: uppercase;
+  -webkit-font-smoothing: antialiased;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* Button group layout */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Toggle button base styles */
+.toggle-btn {
+  font-family: var(--pp-font);
+  font-weight: 400;
+  font-size: 9px;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+  -webkit-font-smoothing: antialiased;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.toggle-btn:hover {
+  background: rgba(156, 71, 255, 0.1);
+}
+
+/* Active/toggled state */
+.toggle-btn.active {
+  background: var(--accent) !important;
+  color: white !important;
+}
+
+/* Row dropdown styles */
+
+.row-dropdown {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 36px; /* fallback; updated dynamically by JS */
+  bottom: 80px; /* fallback; updated dynamically by JS */
+  background: rgba(255,255,255,0.95);
+  /* remove top/bottom borders so header and bottom strokes don't double up */
+  border-top: none;
+  border-bottom: none;
+  z-index: 1400;
+  display: none;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.row-dropdown[aria-hidden="false"] {
+  display: block;
+}
+
+.row-dropdown__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 16px 32px 16px;
+  box-sizing: border-box;
+}
+
+
+.row-dropdown__header h3 {
+  margin: 0 0 12px 0;
+  color: var(--accent);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.row-dropdown__images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.row-dropdown__images img {
+  max-height: 260px;
+  width: auto;
+  display: block;
+  border: 1px solid var(--accent);
+  padding: 6px;
+  background: white;
+}
+
+/* When dropdown open, keep list rows visually unchanged (prevent hover from inverting text) */
+body.dropdown-open .list > .row:hover {
+  background-color: transparent !important;
+}
+body.dropdown-open .list > .row .name,
+body.dropdown-open .list > .row .studio,
+body.dropdown-open .list > .row .neighbourhood,
+body.dropdown-open .list > .row .number {
+  color: var(--accent) !important;
+}
+
+/* Expanded row keeps accent hover rather than white bg */
+.list > .row.row-expanded:hover {
+  background-color: transparent !important;
+}
+.list > .row.row-expanded:hover .name,
+.list > .row.row-expanded:hover .studio,
+.list > .row.row-expanded:hover .neighbourhood,
+.list > .row.row-expanded:hover .number {
+  color: var(--accent) !important;
+}
+
+body.dropdown-open {
+  overflow: hidden;
+}
+
+body.dropdown-open .list {
+  visibility: hidden;
+}
+
+/* Row expanded state — the clicked row grows to fill between header and footer */
+/* Row is moved to body so it escapes Isotope's transform context */
+.row.row-expanded {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1500;
+  background: white;
+  display: block;
+  overflow: hidden;
+  border: none;
+  transition: top 0.5s ease-in-out, height 0.5s ease-in-out;
+  padding: 0;
+}
+
+/* Placeholder left in the list to keep Isotope layout stable */
+.row-placeholder {
+  visibility: hidden;
+}
+
+/* Once fully expanded, allow horizontal scrolling in the gallery */
+.list > .row.row-expanded.row-open {
+  overflow: hidden;
+}
+
+/* Text bar inside expanded row — mirrors the normal row layout */
+.row-text-bar {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  width: 100%;
+  border-bottom: 1px dotted var(--accent);
+  box-sizing: border-box;
+}
+
+/* Collapse overlay — inherits text styling */
+.collapse-overlay .name,
+.collapse-overlay .studio,
+.collapse-overlay .neighbourhood,
+.collapse-overlay .number {
+  position: static;
+  margin: 0;
+  padding: 0 20px;
+  display: inline-block;
+  line-height: 36px;
+  font-family: var(--pp-font);
+  font-weight: 200;
+  color: var(--accent);
+  -webkit-font-smoothing: antialiased;
+  text-transform: uppercase;
+}
+
+.collapse-overlay .name {
+  flex: 0 0 200px;
+  text-align: left;
+  padding-left: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.collapse-overlay .studio {
+  flex: 0 0 180px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.collapse-overlay .neighbourhood {
+  flex: 0 0 180px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.collapse-overlay .number {
+  flex: 0 0 auto;
+  margin-left: auto;
+  text-align: right;
+  padding-right: 12px;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .collapse-overlay .studio {
+    display: none;
+  }
+}
+
+@media (max-width: 450px) {
+  .collapse-overlay .neighbourhood {
+    display: none;
+  }
+}
+
+/* Gallery inside the expanded row — horizontal scroll */
+.row-gallery {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  /* equal padding: 12px on all sides, top accounts for the text bar border */
+  padding: 12px;
+  align-items: flex-start;
+  height: calc(100% - 36px); /* fill remaining space below the 36px text bar */
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  transition: transform 0.5s ease-in-out;
+  /* hide scrollbar but still allow scrolling */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.row-gallery::-webkit-scrollbar {
+  display: none;
+}
+
+/* End zone spacer at right side of gallery */
+.gallery-endzone {
+  flex-shrink: 0;
+  width: 100px;
+  min-width: 100px;
+  align-self: stretch;
+}
+
+.row-gallery img {
+  height: calc(100% - 0px);
+  width: auto;
+  flex-shrink: 0;
+  display: block;
+  border: 1px solid var(--accent);
+  padding: 0;
+  background: transparent;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Dim images when hovering the end zone */
+.row-gallery.endzone-hover img {
+  opacity: 0.5;
+}
+
+/* Endzone is the positioning context for the arrow */
+.gallery-endzone {
+  position: relative;
+}
+
+/* Cursor-follow tooltip on endzone hover */
+.endzone-tooltip {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--pp-font);
+  font-weight: 400;
+  font-size: 9px;
+  color: var(--accent);
+  text-transform: uppercase;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.endzone-tooltip.visible {
+  opacity: 1;
+}
+
+/* Arrow — lives inside endzone, scrolls with gallery content */
+.gallery-arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 10px; /* 10px gap from the last image */
+  right: 24px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Stem — always visible, spans from last image edge to chevron */
+.gallery-arrow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 5px;
+  background: var(--accent);
+}
+
+/* Extended tail — fades in on endzone hover, stretches far left across all images */
+.gallery-arrow.show-tail::before {
+  left: -200vw;
+}
+
+/* Arrowhead chevron pointing right — always visible */
+.gallery-arrow::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  border-top: 5px solid var(--accent);
+  border-right: 5px solid var(--accent);
+  transform: translateY(-50%) rotate(45deg);
+  transform-origin: center center;
+  box-sizing: border-box;
 }
