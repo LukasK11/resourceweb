@@ -31,11 +31,35 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', function() {
       // Close any open dropdown before filtering
       if (typeof collapseRowInstant === 'function') collapseRowInstant();
+      if (typeof clearMobileMarquee === 'function') clearMobileMarquee();
 
-      // Toggle active state
-      btn.classList.toggle('active');
-      // Get all active filters
-      var activeBtns = Array.from(document.querySelectorAll('.toggle-btn.active'));
+      var group = btn.closest('.button-group');
+      var isAllBtn = btn.classList.contains('all-btn');
+      var allBtn = group ? group.querySelector('.all-btn') : null;
+
+      if (isAllBtn) {
+        // Clicking "all": deselect all other filters in this group, select "all"
+        if (group) {
+          group.querySelectorAll('.toggle-btn:not(.all-btn)').forEach(b => b.classList.remove('active'));
+        }
+        btn.classList.add('active');
+      } else {
+        // Toggle this filter
+        btn.classList.toggle('active');
+        // If any non-all filter is now active, deselect "all"
+        var hasActive = group && group.querySelector('.toggle-btn.active:not(.all-btn)');
+        if (allBtn) {
+          if (hasActive) {
+            allBtn.classList.remove('active');
+          } else {
+            // No filters active in this group, re-select "all"
+            allBtn.classList.add('active');
+          }
+        }
+      }
+
+      // Get all active non-all filters
+      var activeBtns = Array.from(document.querySelectorAll('.toggle-btn.active:not(.all-btn)'));
       var filters = activeBtns.map(b => b.textContent.toLowerCase());
       // If no filters, show all
       if (filters.length === 0) {
@@ -74,11 +98,28 @@ function updatePreviewPosition() {
   const bottomTop = bottomContainer ? bottomContainer.getBoundingClientRect().top : window.innerHeight;
   const previewHeight = hoverPreview.offsetHeight || 0;
 
+  // Calculate left edge: follow mouse but clamp to right of last visible text column
+  const firstRow = document.querySelector('.list > .row');
+  let minLeftX = 0;
+  if (firstRow) {
+    const neighbourhood = firstRow.querySelector('.neighbourhood');
+    const studio = firstRow.querySelector('.studio');
+    // Use neighbourhood if visible, otherwise fall back to studio
+    const anchor = (neighbourhood && neighbourhood.offsetWidth > 0) ? neighbourhood
+                 : (studio && studio.offsetWidth > 0) ? studio
+                 : null;
+    if (anchor) {
+      const rect = anchor.getBoundingClientRect();
+      minLeftX = rect.right + 10;
+    }
+  }
+  const leftX = Math.max(mouseX + 20, minLeftX);
+
   // Clamp so the bottom of the preview never goes below the top of the footer
   const maxTop = bottomTop - previewHeight;
   const clampedY = Math.min(mouseY, maxTop);
 
-  hoverPreview.style.left = (mouseX + 20) + 'px';
+  hoverPreview.style.left = leftX + 'px';
   hoverPreview.style.top = clampedY + 'px';
 }
 
@@ -161,12 +202,23 @@ function cleanupGalleryScroll() {
   }
 }
 
-function populateGallery(gallery, folder, colourFiles, title) {
+function populateGallery(gallery, folder, colourFiles, title, row) {
   gallery.innerHTML = '';
   if (!colourFiles || colourFiles.length === 0) return;
+
+  // Add close (X) button before images, hidden off-screen to the left
+  const closeBtn = document.createElement('div');
+  closeBtn.className = 'gallery-close';
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (typeof collapseRow === 'function') collapseRow();
+  });
+  gallery.appendChild(closeBtn);
+
   colourFiles.forEach((filename, i) => {
     const img = document.createElement('img');
-    img.src = `./images/${encodeURIComponent(folder)}/colour/${encodeURIComponent(filename)}`;
+    const colourFolder = row.dataset.colourFolder || 'colour';
+    img.src = `./images/${encodeURIComponent(folder)}/${colourFolder}/${encodeURIComponent(filename)}`;
     img.alt = `${title} ${i + 1}`;
     img.loading = 'lazy';
     gallery.appendChild(img);
@@ -204,13 +256,45 @@ function populateGallery(gallery, folder, colourFiles, title) {
     tooltip.style.top = e.clientY + 21 + 'px';
   });
 
+  // Track whether the endzone tooltip is already showing (for mobile two-tap)
+  let endzonePrimed = false;
+
   // Click endzone to open external link in new tab
   endzone.style.cursor = 'pointer';
   endzone.addEventListener('click', (e) => {
     e.stopPropagation();
     const row = gallery.closest('.row');
     const url = row ? row.getAttribute('data-link') : null;
-    if (url) window.open(url, '_blank');
+
+    if (isMobileView()) {
+      if (!endzonePrimed) {
+        // First tap: show tooltip + visual effects (same as desktop hover)
+        gallery.classList.add('endzone-hover');
+        arrow.classList.add('show-tail');
+        // Position tooltip fixed below the arrowhead
+        const arrowRect = arrow.getBoundingClientRect();
+        tooltip.style.left = (arrowRect.right - 10) + 'px';
+        tooltip.style.top = (arrowRect.top + arrowRect.height / 2 + 20) + 'px';
+        tooltip.classList.add('visible');
+        endzonePrimed = true;
+        return;
+      }
+      // Second tap: navigate
+      endzonePrimed = false;
+      if (url) window.open(url, '_blank');
+    } else {
+      if (url) window.open(url, '_blank');
+    }
+  });
+
+  // Reset primed state when scrolling away from endzone on mobile
+  gallery.addEventListener('scroll', () => {
+    if (endzonePrimed) {
+      endzonePrimed = false;
+      gallery.classList.remove('endzone-hover');
+      arrow.classList.remove('show-tail');
+      tooltip.classList.remove('visible');
+    }
   });
 }
 
@@ -283,6 +367,11 @@ function expandRow(row) {
     row.appendChild(textBar);
   }
 
+  // On mobile, inject a marquee into the text bar showing studio + neighbourhood
+  if (isMobileView()) {
+    showMobileMarqueeInBar(textBar);
+  }
+
   // Create gallery inside the row
   let gallery = row.querySelector('.row-gallery');
   if (!gallery) {
@@ -290,7 +379,13 @@ function expandRow(row) {
     gallery.className = 'row-gallery';
     row.appendChild(gallery);
   }
-  populateGallery(gallery, folder, colourFiles, title);
+  populateGallery(gallery, folder, colourFiles, title, row);
+
+  // Immediately scroll past the close button so it's never visible during open
+  const closeBtn = gallery.querySelector('.gallery-close');
+  if (closeBtn) {
+    gallery.scrollLeft = closeBtn.offsetWidth + 12;
+  }
 
   // Place the row fixed at its CURRENT position first (no visual jump)
   row.style.position = 'fixed';
@@ -301,7 +396,7 @@ function expandRow(row) {
   row.classList.add('row-expanded');
   row.offsetHeight; // force reflow
 
-  // Now animate: top slides up to header, height grows to fill the gap
+  // Animate top slides up to header, height grows to fill the gap
   const bottomContainer = document.querySelector('.bottom-container');
   const bottomH = bottomContainer ? bottomContainer.getBoundingClientRect().height : 80;
   const endTop = 36; // just below the header
@@ -337,7 +432,7 @@ function collapseRow() {
   row.classList.remove('row-open');
 
   // Create an overlay that looks exactly like the current expanded state
-  // Move the text bar and gallery INTO the overlay so they slide away with it
+  // Move the text bar and gallery into the overlay so they slide away with it
   const overlay = document.createElement('div');
   overlay.className = 'collapse-overlay';
   overlay.style.position = 'fixed';
@@ -386,7 +481,7 @@ function collapseRow() {
     expandedPlaceholder.remove();
   }
 
-  // Restore Isotope styles (still valid because we unbound Isotope resize)
+  // Restore Isotope styles (still valid because unbound Isotope resize)
   if (savedIsotopeStyles) {
     row.style.position = savedIsotopeStyles.position;
     row.style.top = savedIsotopeStyles.top;
@@ -420,7 +515,7 @@ function collapseRow() {
     overlayGallery.style.transform = 'translateX(100vw)';
   }
 
-  // Now animate the overlay shrinking to the row's position — revealing the row underneath
+  // Animate the overlay shrinking to the row's position — revealing the row underneath
   // Clamp top so the overlay never goes above the header (36px)
   overlay.offsetHeight; // reflow
   overlay.style.top = Math.max(36, returnTop) + 'px';
@@ -475,52 +570,234 @@ function collapseRowInstant() {
   if (window.iso) window.iso.bindResize();
 }
 
+// ---- MOBILE MARQUEE ----
+let marqueeActiveRow = null; // the row currently showing a marquee
+
+function isMobileView() {
+  return window.matchMedia('(max-width: 768px)').matches;
+}
+
+function clearMobileMarquee() {
+  if (marqueeActiveRow) {
+    const existing = marqueeActiveRow.querySelector('.mobile-marquee');
+    if (existing) existing.remove();
+    marqueeActiveRow.classList.remove('marquee-active');
+    marqueeActiveRow = null;
+  }
+}
+
+function showMobileMarquee(row) {
+  // Remove any existing marquee on another row
+  clearMobileMarquee();
+
+  const studio = row.querySelector('.studio');
+  const neighbourhood = row.querySelector('.neighbourhood');
+  const number = row.querySelector('.number');
+  const studioText = studio ? studio.textContent.trim() : '';
+  const neighbourhoodText = neighbourhood ? neighbourhood.textContent.trim() : '';
+
+  // Build marquee content: "studio  ·  neighbourhood" repeated for seamless loop
+  const content = [studioText, neighbourhoodText].filter(Boolean).join('  ·  ');
+
+  const marquee = document.createElement('div');
+  marquee.className = 'mobile-marquee';
+
+  const inner = document.createElement('div');
+  inner.className = 'mobile-marquee-inner';
+
+  // Two identical copies for seamless infinite loop
+  for (let i = 0; i < 2; i++) {
+    const span = document.createElement('span');
+    span.textContent = content;
+    inner.appendChild(span);
+  }
+  marquee.appendChild(inner);
+
+  // Insert marquee between name and number
+  row.insertBefore(marquee, number);
+  row.classList.add('marquee-active');
+  marqueeActiveRow = row;
+}
+
+// Show marquee inside an already-created text bar (used during expand)
+function showMobileMarqueeInBar(textBar) {
+  const studio = textBar.querySelector('.studio');
+  const neighbourhood = textBar.querySelector('.neighbourhood');
+  const number = textBar.querySelector('.number');
+  const studioText = studio ? studio.textContent.trim() : '';
+  const neighbourhoodText = neighbourhood ? neighbourhood.textContent.trim() : '';
+
+  const content = [studioText, neighbourhoodText].filter(Boolean).join('  ·  ');
+
+  const marquee = document.createElement('div');
+  marquee.className = 'mobile-marquee';
+
+  const inner = document.createElement('div');
+  inner.className = 'mobile-marquee-inner';
+
+  // Two identical copies for seamless infinite loop
+  for (let i = 0; i < 2; i++) {
+    const span = document.createElement('span');
+    span.textContent = content;
+    inner.appendChild(span);
+  }
+  marquee.appendChild(inner);
+
+  // Insert before the number element in the text bar
+  if (number) {
+    textBar.insertBefore(marquee, number);
+  } else {
+    textBar.appendChild(marquee);
+  }
+  textBar.classList.add('marquee-active');
+}
+
 // Attach click listeners to rows
 document.querySelectorAll('.list > .row').forEach(row => {
   row.addEventListener('click', () => {
-    expandRow(row);
+    clearMobileMarquee();
+    if (isMobileView() && document.querySelector('.buttons-wrapper.filters-open')) {
+      // Close filters first, then expand after the transition completes
+      closeMobileFilters();
+      setTimeout(() => expandRow(row), 420);
+    } else {
+      expandRow(row);
+    }
   });
 });
 
 // Close via header (Purple Pages) click
 const headerLogotype = document.querySelector('.header-logotype');
 if (headerLogotype) {
-  headerLogotype.addEventListener('click', collapseRow);
+  headerLogotype.addEventListener('click', () => {
+    clearMobileMarquee();
+    collapseRow();
+  });
 }
 
-// Header marquee scroll on hover
-(function() {
+// Glitch-scramble text effect on header logotype
+(function () {
+  const el = document.querySelector('.header-logotype');
+  if (!el) return;
+
+  const textA = 'PURPLE PAGES';
+  const textB = 'AN INDEX OF TORONTO TATTOO ARTISTS';
+  const glyphPool = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const frameDuration = 30;   // ms per tick
+  const totalSteps = 18;      // number of ticks for the full resolve
+
+  let currentText = textA;
+  let targetText = textB;
+  let animFrame = null;
+  let step = 0;
+
+  function randomChar() {
+    return glyphPool[Math.floor(Math.random() * glyphPool.length)];
+  }
+
+  function scrambleTo(target, onDone) {
+    if (animFrame) clearInterval(animFrame);
+    targetText = target;
+    step = 0;
+    const maxLen = Math.max(currentText.length, targetText.length);
+
+    animFrame = setInterval(() => {
+      step++;
+      let out = '';
+      for (let i = 0; i < maxLen; i++) {
+        const targetChar = i < targetText.length ? targetText[i] : '';
+        // Each character resolves at a staggered point
+        const resolveAt = Math.floor((i / maxLen) * totalSteps * 0.6) + totalSteps * 0.4;
+        if (step >= resolveAt || targetChar === ' ') {
+          out += targetChar;
+        } else {
+          out += randomChar();
+        }
+      }
+      el.textContent = out;
+
+      if (step >= totalSteps) {
+        clearInterval(animFrame);
+        animFrame = null;
+        el.textContent = targetText;
+        currentText = targetText;
+        if (onDone) onDone();
+      }
+    }, frameDuration);
+  }
+
   const header = document.querySelector('.site-header');
-  const marquee = document.querySelector('.header-marquee');
-  if (!header || !marquee) return;
+  const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+  let showingB = false;
 
-  header.addEventListener('mouseenter', () => {
-    marquee.classList.remove('returning');
-    marquee.offsetHeight;
-    marquee.classList.add('scrolling');
-  });
+  // Desktop: hover in/out
+  header.addEventListener('mouseenter', () => { if (!isMobile()) scrambleTo(textB); });
+  header.addEventListener('mouseleave', () => { if (!isMobile()) scrambleTo(textA); });
 
-  header.addEventListener('mouseleave', () => {
-    marquee.classList.remove('scrolling');
-    // Capture current position so return starts from where it is
-    const computed = getComputedStyle(marquee).transform;
-    marquee.style.transform = computed;
-    marquee.offsetHeight; // reflow
-    marquee.classList.add('returning');
-    // returning class sets transform: translateX(100%) which slides it back off-screen right
-
-    function onDone() {
-      marquee.removeEventListener('transitionend', onDone);
-      marquee.classList.remove('returning');
-      marquee.style.transform = '';
+  // Mobile: tap to toggle
+  header.addEventListener('click', (e) => {
+    if (!isMobile()) return;
+    // Don't scramble when tapping to close an expanded row
+    if (listExpanded) return;
+    if (e.target.closest('.header-logotype') || e.target === header) {
+      showingB = !showingB;
+      scrambleTo(showingB ? textB : textA);
     }
-    marquee.addEventListener('transitionend', onDone);
   });
 })();
+
+
 
 // Update expanded height on resize
 window.addEventListener('resize', () => {
   if (listExpanded && expandedRow) {
     expandedRow.style.height = getTargetHeight() + 'px';
   }
+  updateListPadding();
 });
+
+// Dynamically set list bottom padding to match the fixed bottom container
+function updateListPadding() {
+  const list = document.querySelector('.list');
+  const bottom = document.querySelector('.bottom-container');
+  if (!list || !bottom) return;
+  const h = bottom.getBoundingClientRect().height;
+  list.style.paddingBottom = (h + 8) + 'px';
+}
+updateListPadding();
+window.addEventListener('load', updateListPadding);
+
+// Dismiss mobile marquee when tapping outside of rows
+document.addEventListener('click', (e) => {
+  if (!marqueeActiveRow) return;
+  if (e.target.closest('.list > .row')) return;
+  clearMobileMarquee();
+});
+
+// ---- MOBILE FILTER TOGGLE ----
+(function () {
+  const toggleBtn = document.querySelector('.mobile-filter-toggle');
+  const wrapper = document.querySelector('.buttons-wrapper');
+  if (!toggleBtn || !wrapper) return;
+
+  toggleBtn.addEventListener('click', () => {
+    const isOpen = wrapper.classList.toggle('filters-open');
+    toggleBtn.classList.toggle('open', isOpen);
+    // Update list padding after the transition finishes
+    setTimeout(updateListPadding, 420);
+    requestAnimationFrame(updateListPadding);
+  });
+})();
+
+// Close the mobile filter panel programmatically
+function closeMobileFilters() {
+  const toggleBtn = document.querySelector('.mobile-filter-toggle');
+  const wrapper = document.querySelector('.buttons-wrapper');
+  if (!toggleBtn || !wrapper) return;
+  if (wrapper.classList.contains('filters-open')) {
+    wrapper.classList.remove('filters-open');
+    toggleBtn.classList.remove('open');
+    setTimeout(updateListPadding, 420);
+    requestAnimationFrame(updateListPadding);
+  }
+}
